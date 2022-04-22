@@ -38,11 +38,17 @@ yargs.command({
     },
   },
   handler(argv) {
-    if (typeof argv.title === 'string') {
-      console.log("Añadida nota");
+    if ((typeof argv.title === 'string') && (typeof argv.body === 'string') &&
+        (typeof argv.color === 'string' && (typeof argv.user === 'string'))) {
+      const noteToAdd = new Note(argv.title, argv.body, argv.color as ColorChoice);
+      if (notesDataBase.addNewNote(argv.user, noteToAdd) === -1) {
+        console.log(`Error: el usuario ${argv.user} ya tiene una nota con el mismo título`);
+      } else {
+        console.log(`Nota añadida con éxito`);
+      }
     }
   },
-}).parse();
+}).parseSync();
 
 
 yargs.command({
@@ -75,7 +81,7 @@ yargs.command({
       console.log("Nota modificada");
     }
   },
-}).parse();
+}).parseSync();
 
 
 yargs.command({
@@ -94,11 +100,15 @@ yargs.command({
     },
   },
   handler(argv) {
-    if (typeof argv.title === 'string') {
-      console.log("Nota eliminada");
+    if ((typeof argv.title === 'string') && (typeof argv.user === 'string')) {
+      if (notesDataBase.deleteNote(argv.user, argv.title) === -1) {
+        console.log(`Error: no existe ninguna nota con título ${argv.title}`);
+      } else {
+        console.log(`Nota eliminada con éxito`);
+      }
     }
   },
-}).parse();
+}).parseSync();
 
 
 yargs.command({
@@ -113,10 +123,31 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.user === 'string') {
-      console.log("Lista mostrada");
+      const notesToList = notesDataBase.getUserNotes(argv.user);
+      if (typeof notesToList !== "undefined") {
+        notesToList.getUserNotes().forEach((note) => {
+          const colorToPrint = note.getColor();
+          switch (colorToPrint) {
+            case "blue":
+              console.log(chalk.blue(`${note.getTitle()}`));
+              break;
+            case "red":
+              console.log(chalk.red(`${note.getTitle()}`));
+              break;
+            case "green":
+              console.log(chalk.green(`${note.getTitle()}`));
+              break;
+            case "yellow":
+              console.log(chalk.yellow(`${note.getTitle()}`));
+              break;
+          }
+        });
+      } else {
+        console.log(chalk.red(`Error: no se encuentra el usuario ${argv.user}`));
+      }
     }
   },
-}).parse();
+}).parseSync();
 
 
 yargs.command({
@@ -139,4 +170,4 @@ yargs.command({
       console.log("Nota mostrada");
     }
   },
-}).parse();
+}).parseSync();
