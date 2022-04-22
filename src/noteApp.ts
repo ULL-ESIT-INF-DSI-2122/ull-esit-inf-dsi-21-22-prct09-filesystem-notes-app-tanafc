@@ -1,14 +1,16 @@
-import * as fs from 'fs';
 import * as chalk from 'chalk';
 import * as yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {ColorChoice} from "./note";
 import {Note} from "./note";
 import {UserNotes} from "./userNotes";
+import {NotesFileSystem} from "./notesFileSystem";
 
 
 // console.log(chalk.blue('This text is blue'));
 // console.log(chalk.blue.inverse('This text is over a blue background'));
+
+let notesDataBase = new NotesFileSystem();
 
 yargs.command({
   command: 'add',

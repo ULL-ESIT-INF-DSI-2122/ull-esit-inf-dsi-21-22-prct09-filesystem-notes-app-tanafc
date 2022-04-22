@@ -5,7 +5,7 @@ export class UserNotes {
   private userNotes: Note[];
   private userName: string;
 
-  constructor(name: string, notes: Note[]) {
+  constructor(name: string, notes: Note[] = []) {
     this.userName = name;
     this.userNotes = notes;
   }
