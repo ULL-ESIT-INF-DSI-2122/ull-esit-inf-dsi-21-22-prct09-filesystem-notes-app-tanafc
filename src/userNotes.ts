@@ -28,19 +28,6 @@ export class UserNotes {
     return 0;
   }
 
-  public modifyNote(title: string, newTitle: string,
-      newBody: string, newColor: ColorChoice): number {
-    for (let i = 0; i < this.userNotes.length; i++) {
-      if (this.userNotes[i].getTitle() === title) {
-        this.userNotes[i].setTitle(newTitle);
-        this.userNotes[i].setBody(newBody);
-        this.userNotes[i].setColor(newColor);
-        return 0;
-      }
-    }
-    return -1;
-  }
-
   public deleteNote(title: string): number {
     for (let i = 0; i < this.userNotes.length; i++) {
       if (this.userNotes[i].getTitle() === title) {
