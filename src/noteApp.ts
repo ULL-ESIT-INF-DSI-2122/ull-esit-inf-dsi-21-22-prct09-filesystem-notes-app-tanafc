@@ -2,7 +2,6 @@ import * as chalk from 'chalk';
 import * as yargs from 'yargs';
 import {ColorChoice} from "./note";
 import {Note} from "./note";
-import {UserNotes} from "./userNotes";
 import {NotesFileSystem} from "./notesFileSystem";
 
 
