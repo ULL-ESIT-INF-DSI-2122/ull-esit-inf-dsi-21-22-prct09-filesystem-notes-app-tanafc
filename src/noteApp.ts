@@ -96,15 +96,15 @@ yargs.command({
       if (typeof userNotes === 'undefined') {
         console.log(chalk.red.inverse(`Error: no se encuentra el usuario ${argv.user}`));
       } else {
-        const note = userNotes.getNote(argv.title);
+        let note = userNotes.getNote(argv.title);
         if (typeof note === 'undefined') {
           console.log(chalk.red.inverse(`Error: no existe nota ${argv.title} del usuario ${argv.user}`));
         } else {
           notesDataBase.deleteNote(argv.user, argv.title);
-          if (argv.chtitle === 'string') {
+          if (typeof argv.chtitle === 'string') {
             note.setTitle(argv.chtitle);
           }
-          if (argv.chbody === 'string') {
+          if (typeof argv.chbody === 'string') {
             note.setBody(argv.chbody);
           }
           if (typeof argv.chcolor === 'string') {
@@ -114,7 +114,11 @@ yargs.command({
               note.setColor(argv.chcolor as ColorChoice);
             }
           }
-          notesDataBase.addNewNote(argv.user, note);
+          if (notesDataBase.addNewNote(argv.user, note) === 0) {
+            console.log(chalk.green.inverse(`Nota modificada con éxito`));
+          } else {
+            console.log(chalk.red.inverse(`Error: error inesperado al añadir la nota`));
+          }
         }
       }
     }
