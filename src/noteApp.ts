@@ -4,9 +4,16 @@ import {ColorChoice} from "./note";
 import {Note} from "./note";
 import {NotesFileSystem} from "./notesFileSystem";
 
-
+/**
+ * Manager of the files of the users.
+ */
 const notesDataBase = new NotesFileSystem();
 
+/**
+ * Determines if a given color is available.
+ * @param color color to be determined.
+ * @returns true if its an available color, false otherwise.
+ */
 function isColor(color: string): color is ColorChoice {
   if ((color !== 'red') && (color !== 'blue') &&
       (color !== 'yellow') && (color !== 'green')) {
@@ -16,6 +23,7 @@ function isColor(color: string): color is ColorChoice {
   }
 }
 
+/** Add command to add a new user`s note */
 yargs.command({
   command: 'add',
   describe: 'Add a new note',
@@ -58,7 +66,7 @@ yargs.command({
   },
 });
 
-
+/** Modify command to modify an existing user`s note */
 yargs.command({
   command: 'modify',
   describe: 'Modify an existing note',
@@ -124,7 +132,7 @@ yargs.command({
   },
 });
 
-
+/** Delete command to delete an existing user`s note */
 yargs.command({
   command: 'delete',
   describe: 'Delete an existing note',
@@ -151,7 +159,7 @@ yargs.command({
   },
 });
 
-
+/** List command to list all the existing notes of a user */
 yargs.command({
   command: 'list',
   describe: 'Lists all the existing notes of the user',
@@ -193,7 +201,7 @@ yargs.command({
   },
 });
 
-
+/** Read command to read an existing note of a user */
 yargs.command({
   command: 'read',
   describe: 'Read an existing note of the user',

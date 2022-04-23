@@ -2,18 +2,31 @@ import * as fs from 'fs';
 import {UserNotes} from './userNotes';
 import {Note} from './note';
 
+/**
+ * Class that defines a series of methods to manage the files
+ * of a users`s notes and provides ways to add and delete notes.
+ */
 export class NotesFileSystem {
+  /** Collection of the users`s notes */
   private usersNotes: UserNotes[] = [];
 
   constructor() {
     this.loadUsersData();
   }
 
+  /**
+   * @returns returns the collection of users`s notes
+   */
   public getUsersNotes(): UserNotes[] {
     return this.usersNotes;
   }
 
-
+  /**
+   * Returns a specific user`s notes.
+   * @param name name of the user to search.
+   * @returns the user`s notes, undefined if the
+   * name does not match any user.
+   */
   public getUserNotes(name: string): UserNotes | undefined {
     for (let i = 0; i < this.usersNotes.length; i++) {
       if (this.usersNotes[i].getUserName() === name) {
@@ -74,7 +87,13 @@ export class NotesFileSystem {
     }
   }
 
-
+  /**
+   * Adds a new note to the collection of notes of a user.
+   * @param user user to add a new note.
+   * @param newNote new note to add.
+   * @returns 0 if the note was successfully added, -1
+   * if there is an already existing note with the same name.
+   */
   public addNewNote(user: string, newNote: Note): number {
     let userNotes = this.getUserNotes(user);
     if (typeof userNotes === "undefined") {
@@ -88,7 +107,13 @@ export class NotesFileSystem {
     }
   }
 
-
+  /**
+   * Deletes an existing user`s note.
+   * @param user user to delete a note from.
+   * @param titleOfNote title of the note to delete.
+   * @returns 0 if deleted successfully, -1 if there is
+   * no match with the title of the note.
+   */
   public deleteNote(user: string, titleOfNote: string): number {
     let userNotes = this.getUserNotes(user);
     if (typeof userNotes === "undefined") {
