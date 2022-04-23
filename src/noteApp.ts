@@ -1,16 +1,21 @@
 import * as chalk from 'chalk';
 import * as yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
 import {ColorChoice} from "./note";
 import {Note} from "./note";
 import {UserNotes} from "./userNotes";
 import {NotesFileSystem} from "./notesFileSystem";
 
 
-// console.log(chalk.blue('This text is blue'));
-// console.log(chalk.blue.inverse('This text is over a blue background'));
+const notesDataBase = new NotesFileSystem();
 
-let notesDataBase = new NotesFileSystem();
+function isColor(color: string): color is ColorChoice {
+  if ((color !== 'red') && (color !== 'blue') &&
+      (color !== 'yellow') && (color !== 'green')) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 yargs.command({
   command: 'add',
@@ -40,15 +45,19 @@ yargs.command({
   handler(argv) {
     if ((typeof argv.title === 'string') && (typeof argv.body === 'string') &&
         (typeof argv.color === 'string' && (typeof argv.user === 'string'))) {
-      const noteToAdd = new Note(argv.title, argv.body, argv.color as ColorChoice);
-      if (notesDataBase.addNewNote(argv.user, noteToAdd) === -1) {
-        console.log(`Error: el usuario ${argv.user} ya tiene una nota con el mismo título`);
+      if (isColor(argv.color)) {
+        const noteToAdd = new Note(argv.title, argv.body, argv.color as ColorChoice);
+        if (notesDataBase.addNewNote(argv.user, noteToAdd) === -1) {
+          console.log(chalk.red.inverse(`Error: el usuario ${argv.user} ya tiene una nota con el mismo título`));
+        } else {
+          console.log(chalk.green.inverse(`Nota añadida con éxito`));
+        }
       } else {
-        console.log(`Nota añadida con éxito`);
+        console.log(chalk.red.inverse(`Error: el color ${argv.color} no está disponible`));
       }
     }
   },
-}).parseSync();
+});
 
 
 yargs.command({
@@ -65,23 +74,52 @@ yargs.command({
       demandOption: true,
       type: 'string',
     },
-    body: {
-      describe: 'New note body',
-      demandOption: true,
+    chtitle: {
+      describe: 'New title of the note',
+      demandOption: false,
       type: 'string',
     },
-    color: {
-      describe: 'New note color',
-      demandOption: true,
+    chbody: {
+      describe: 'New body of the note',
+      demandOption: false,
+      type: 'string',
+    },
+    chcolor: {
+      describe: 'New body of the note',
+      demandOption: false,
       type: 'string',
     },
   },
   handler(argv) {
-    if (typeof argv.title === 'string') {
-      console.log("Nota modificada");
+    if ((typeof argv.title === 'string') && (typeof argv.user === 'string')) {
+      const userNotes = notesDataBase.getUserNotes(argv.user);
+      if (typeof userNotes === 'undefined') {
+        console.log(chalk.red.inverse(`Error: no se encuentra el usuario ${argv.user}`));
+      } else {
+        const note = userNotes.getNote(argv.title);
+        if (typeof note === 'undefined') {
+          console.log(chalk.red.inverse(`Error: no existe nota ${argv.title} del usuario ${argv.user}`));
+        } else {
+          notesDataBase.deleteNote(argv.user, argv.title);
+          if (argv.chtitle === 'string') {
+            note.setTitle(argv.chtitle);
+          }
+          if (argv.chbody === 'string') {
+            note.setBody(argv.chbody);
+          }
+          if (typeof argv.chcolor === 'string') {
+            if (!isColor(argv.chcolor)) {
+              console.log(chalk.red.inverse(`Error: color ${argv.chcolor} no disponible`));
+            } else {
+              note.setColor(argv.chcolor as ColorChoice);
+            }
+          }
+          notesDataBase.addNewNote(argv.user, note);
+        }
+      }
     }
   },
-}).parseSync();
+});
 
 
 yargs.command({
@@ -102,13 +140,13 @@ yargs.command({
   handler(argv) {
     if ((typeof argv.title === 'string') && (typeof argv.user === 'string')) {
       if (notesDataBase.deleteNote(argv.user, argv.title) === -1) {
-        console.log(`Error: no existe ninguna nota con título ${argv.title}`);
+        console.log(chalk.red.inverse(`Error: no existe ninguna nota con título ${argv.title} del usuario ${argv.user}`));
       } else {
-        console.log(`Nota eliminada con éxito`);
+        console.log(chalk.green.inverse(`Nota eliminada con éxito`));
       }
     }
   },
-}).parseSync();
+});
 
 
 yargs.command({
@@ -140,14 +178,17 @@ yargs.command({
             case "yellow":
               console.log(chalk.yellow(`${note.getTitle()}`));
               break;
+            default:
+              console.log(chalk.red.inverse(`Error: color de la nota ${note.getTitle()} no disponible`));
+              break;
           }
         });
       } else {
-        console.log(chalk.red(`Error: no se encuentra el usuario ${argv.user}`));
+        console.log(chalk.red.inverse(`Error: no se encuentra el usuario ${argv.user}`));
       }
     }
   },
-}).parseSync();
+});
 
 
 yargs.command({
@@ -166,8 +207,41 @@ yargs.command({
     },
   },
   handler(argv) {
-    if (typeof argv.title === 'string') {
-      console.log("Nota mostrada");
+    if ((typeof argv.title === 'string') && (typeof argv.user === 'string')) {
+      const userNotes = notesDataBase.getUserNotes(argv.user);
+      if (typeof userNotes === 'undefined') {
+        console.log(chalk.red.inverse(`Error: no se encuentra el usuario ${argv.user}`));
+      } else {
+        const note = userNotes.getNote(argv.title);
+        if (typeof note === 'undefined') {
+          console.log(chalk.red.inverse(`Error: no existe nota ${argv.title} del usuario ${argv.user}`));
+        } else {
+          const colorToPrint = note.getColor();
+          switch (colorToPrint) {
+            case "blue":
+              console.log(chalk.blue(`${note.getTitle()}`));
+              console.log(chalk.blue(`${note.getBody()}`));
+              break;
+            case "red":
+              console.log(chalk.red(`${note.getTitle()}`));
+              console.log(chalk.red(`${note.getBody()}`));
+              break;
+            case "green":
+              console.log(chalk.green(`${note.getTitle()}`));
+              console.log(chalk.green(`${note.getBody()}`));
+              break;
+            case "yellow":
+              console.log(chalk.yellow(`${note.getTitle()}`));
+              console.log(chalk.yellow(`${note.getBody()}`));
+              break;
+            default:
+              console.log(chalk.red.inverse(`Error: color de la nota ${note.getTitle()} no disponible`));
+              break;
+          }
+        }
+      }
     }
   },
-}).parseSync();
+});
+
+yargs.parse();

@@ -51,14 +51,6 @@ export class UserNotes {
     return -1;
   }
 
-  public listNotes(): string {
-    let listOfTitles = '';
-    this.userNotes.forEach((note) => {
-      listOfTitles += note.getTitle() + ' ';
-    });
-    return listOfTitles;
-  }
-
   public getNote(title: string): Note | undefined {
     for (let i = 0; i < this.userNotes.length; i++) {
       if (this.userNotes[i].getTitle() === title) {

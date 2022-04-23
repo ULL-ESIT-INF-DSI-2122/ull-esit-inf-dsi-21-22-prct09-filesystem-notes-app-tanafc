@@ -27,7 +27,7 @@ export class NotesFileSystem {
    * Reads the notes of the users under ./notes directory
    * and loads them into usersNotes.
    */
-  public loadUsersData(): void {
+  private loadUsersData(): void {
     const usersFolders = fs.readdirSync('./notes/');
     if (usersFolders.length !== 0) {
       usersFolders.forEach((user) => {
@@ -51,7 +51,7 @@ export class NotesFileSystem {
    * @param user user´s directory to check.
    * @param note note to write in the file of the directory.
    */
-  public writeUserData(user: string, note: Note): void {
+  private writeUserData(user: string, note: Note): void {
     if (!fs.existsSync(`./notes/${user}`)) {
       fs.mkdirSync(`./notes/${user}`);
     }
@@ -68,7 +68,7 @@ export class NotesFileSystem {
    * @param user user`s note to delete.
    * @param title title of the note to delete.
    */
-  public deleteUserData(user: string, title: string): void {
+  private deleteUserData(user: string, title: string): void {
     if (fs.existsSync(`./notes/${user}`)) {
       fs.rmSync(`./notes/${user}/${title}.json`);
     }
